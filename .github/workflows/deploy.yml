@@ -1,0 +1,18 @@
+name: Deploy
+
+on: workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Deploy Functions Firebase
+        run: |
+          npm install -g firebase-tools
+          firebase deploy
