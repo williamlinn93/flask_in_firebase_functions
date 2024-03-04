@@ -1,0 +1,31 @@
+name: Deploy
+
+on: workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Python3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+      - name: Install Dependancy
+        working-directory: functions
+        run: |
+          python -m venv venv
+          . "venv/bin/activate" && python -m pip install -r requirements.txt
+      - name: Deploy Functions Firebase
+        run: |
+          npm install -g firebase-tools@12.4.0
+          firebase deploy --only functions --debug
